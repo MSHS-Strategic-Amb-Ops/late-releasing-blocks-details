@@ -1,0 +1,1116 @@
+---
+output:
+  html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+<style type="text/css">
+div.main-container {
+  max-width: 2000px;
+  margin-left: 0;
+  margin-right: auto;
+}
+</style>
+<style>
+.tocify {
+color: black;
+}
+<!-- } -->
+<!-- .tocify .tocify-header { -->
+<!--     position: fixed; -->
+<!--     <!-- top: 50px; --> -->
+<!--     left: 50px; -->
+<!--     width: 350px; -->
+<!--     <!-- border: solid 3px black; --> -->
+<!--     <!-- height: 200px; --> -->
+<!--  border: none; -->
+<!-- } -->
+.tocify .tocify-header .active {
+color: white;
+background: #d80b8c;
+font-weight: bold;
+}
+<!-- .tocify .tocify-item { -->
+<!-- background: white; -->
+<!-- color: black; -->
+<!--  border: none; -->
+<!-- } -->
+</style>
+<style>
+  .nav-pills>li>a:hover, .nav-pills>li>a:focus, .nav-pills>li.active>a,     .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus{
+     background-color: #212070;
+     }
+</style>
+<style>
+.container { width: 1800px; }
+h2 {
+  background-color: #dddedd;
+  color: black;
+  text-indent: 20px;
+  <!-- font-weight: bold; -->
+}
+h3 {
+  background-color: #f2f2f2;
+  color: black;
+  text-indent: 20px;
+  <!-- font-weight: bold; -->
+}
+h4 {
+  <!-- background-color: #dddedd; -->
+  <!-- color: black; -->
+  text-indent: 50px;
+  <!-- font-weight: bold; -->
+}
+</style>
+<style>
+.blackbox {
+  padding: 1em;
+  background: white;
+  color: black;
+  border: 2px solid #7f7f7f;
+  width: 100%;
+  position: center;
+  align: center;
+  margin: 0px auto;
+}
+.center {
+  text-align: left;
+  margin: 0px auto;
+}
+</style>
+<!-- ```{css toc-content, echo = FALSE} -->
+<!-- #TOC { -->
+<!--   right: 270px; -->
+<!--   margin: 20px 0px 25px 0px; -->
+<!-- } -->
+<!-- .main-container { -->
+<!--     margin-left: 200px; -->
+<!-- } -->
+<!-- ``` -->
+```{r Load Packages, echo = FALSE, warning = FALSE, message = FALSE}
+# # Load packages -----------------------------------------------------------------------------------
+suppressMessages({
+  memory.limit(size = 8000000)
+  library(readxl)
+  library(writexl)
+  library(plyr)
+  library(dplyr)
+  library(data.table)
+  library(zoo)
+  library(shiny)
+  library(shinydashboard)
+  library(shinydashboardPlus)
+  library(shinyWidgets)
+  library(htmlwidgets)
+  library(lubridate)
+  library(tcltk)
+  library(tidyverse)
+  library(plotly)
+  library(knitr)
+  library(kableExtra)
+  library(leaflet)
+  library(grid)
+  library(gridExtra)
+  library(eeptools)
+  library(ggQC)
+  library(zipcodeR)
+  library(utils)
+  library(scales)
+  library(chron)
+  library(bupaR)
+  library(shiny)
+  library(DT)
+  library(DiagrammeR)
+  library(shinyalert)
+  library(edeaR)
+  library(processmapR)
+  library(processmonitR)
+  library(processanimateR)
+  library(tidyr)
+  library(lubridate)
+  library(RColorBrewer)
+  library(DiagrammeR)
+  library(ggplot2)
+  library(leaflet)
+  library(readr)
+  library(highcharter)
+  library(ggforce) # for 'geom_arc_bar'
+  library(packcircles) # for packed circle graph
+  library(viridis)
+  library(ggiraph)
+  library(treemapify)
+  library(treemap)
+  library(broom)
+  library(extrafont)
+  library(tis) # for US holidays
+  library(vroom)
+  library(sjmisc)
+  library(tools)
+  library(here)
+  library(shinyBS)
+  library(shinyscreenshot)
+  library(fasttime)
+  library(shinycssloaders)
+  library(feather)
+  # library(zipcodeR)
+  library(formattable)
+  library(shinyjs)
+  library(janitor)
+  library(patchwork)
+  library(flexdashboard)
+  # library(tidyverse)
+  # library(viridis)
+  # library(hrbrthemes)
+  # library(plotly)
+  # install.packages("bsts")
+  library(bsts)
+  library(reactable)
+  # install.packages("reactablefmtr")
+  library(reactablefmtr)
+  library(svDialogs)
+  # library(openxlsx)
+  library(flextable)
+  library(officedown)
+  library(officer)
+  library(magrittr)
+  library(webshot) 
+  library(png)
+  library(ggh4x)
+  library(RODBC)
+  library(DBI)
+  library(odbc)
+  library(dbplyr)
+  library(pool)
+  library(emojifont)
+})
+```
+
+
+```{r Graph asthetics, echo = FALSE, warning = FALSE, message = FALSE}
+### Color Functions for Graphs ============================================================
+# Mount Sinai corporate colors "USE THIS TO ADD COLORS"
+MountSinai_colors <- c(
+  `dark purple`  = "#212070",
+  `dark pink`    = "#d80b8c",
+  `dark blue`    = "#00aeef",
+  `dark grey`    = "#7f7f7f",
+  `yellow`       = "#ffc000",
+  `purple`       = "#7030a0",
+  `med purple`   = "#5753d0",
+  `med pink`     = "#f75dbe",
+  `med blue`     = "#5cd3ff",
+  `med grey`     = "#a5a7a5",
+  `light purple` = "#c7c6ef",
+  `light pink`   = "#fcc9e9",
+  `light blue`   = "#c9f0ff",
+  `light grey`   = "#dddedd"
+  )
+# Function to extract Mount Sinai colors as hex codes
+# Use Character names of MountSinai_colors
+MountSinai_cols <- function(...) {
+  cols <- c(...)
+  
+  if (is.null(cols))
+    return (MountSinai_colors)
+  
+  MountSinai_colors[cols]
+}
+# Color Function that can be used to call all colors is "MountSinai_cols()"
+# Use in ggplot 
+  #MountSinai_cols()       # will provide all colors and their hex codes in a table 
+  #MountSinai_cols("pink") # will provide color name and the hex code for the pink color
+# Create palettes 
+MountSinai_palettes <- list(
+  `all`   = MountSinai_cols("dark purple","dark pink","dark blue","dark grey",
+                            "med purple","med pink","med blue","med grey", 
+                            "light purple","light pink","light blue","light grey"),
+  
+  `main`  = MountSinai_cols("dark purple","dark pink","dark blue","dark grey"),
+  
+  `purple`  = MountSinai_cols("dark purple","med purple","light purple"),
+  
+  `pink`  = MountSinai_cols("dark pink","med pink","light pink"),
+  
+  `blue`  = MountSinai_cols("dark blue", "med blue", "light blue"),
+  
+  `grey`  = MountSinai_cols("dark grey", "med grey", "light grey"),
+  
+  `purpleGrey` = MountSinai_cols("dark purple", "dark grey"),
+  
+  `pinkBlue` = MountSinai_cols("dark pink", "dark blue")
+  
+)
+# MountSinai_palettes
+# Return function to interpolate a Mount Sinai color palette
+# default value is the main palette, reverse = True will change the order
+MountSinai_pal <- function(palette = "all", reverse = FALSE, ...) {
+  pal <- MountSinai_palettes[[palette]]
+  
+  if (reverse) pal <- rev(pal)
+  
+  colorRampPalette(pal, ...)
+}
+# Scale Function for ggplot can be used instead of scale_color_manual
+scale_color_MountSinai <- function(palette = "all", discrete = TRUE, reverse = FALSE, ...) {
+  pal <- MountSinai_pal(palette = palette, reverse = reverse)
+  
+  if (discrete) {
+    discrete_scale("colour", paste0("MountSinai_", palette), palette = pal, ...)
+  } else {
+    scale_color_gradientn(colours = pal(256), ...)
+  }
+}
+# Scale Fill for ggplot insetead of scale_fill_manual 
+scale_fill_MountSinai <- function(palette = "all", discrete = TRUE, reverse = FALSE, ...) {
+  pal <- MountSinai_pal(palette = palette, reverse = reverse)
+  if (discrete) {
+    discrete_scale("fill", paste0("MountSinai_", palette), palette = pal, ...)
+  } else {
+    scale_fill_gradientn(colours = pal(256), ...)
+  }
+}
+# Use in ggplot 
+  # scale_color_MountSinai("main")
+```
+
+
+```{r Global Variables, echo = FALSE, warning = FALSE, message = FALSE}
+'%!in%' <- function(x,y)!('%in%'(x,y))
+```
+
+
+```{r Connect to Tables, echo = FALSE, warning = FALSE, message = FALSE}
+# Connection to Oracle DB ------------------------------------------------------
+conn1 <- dbPool(drv = odbc(), dsn = "OAO Cloud DB SoYoun", timeout = 30)
+conn2 <- dbConnect(odbc(), 
+                  "Clarity_prod", 
+                  uid = "kweons01" , 
+                  pwd = "kweons01123$")
+# Import Slot Availability Data ------------------------------------------------
+slot_raw_tbl <- tbl(conn2, "Y_DM_BOOKED_FILLED_RATE")
+access_raw_tbl <- tbl(conn2, "MV_DM_PATIENT_ACCESS")
+availability_raw_tbl <- tbl(conn2, "V_AVAILABILITY")
+block_raw_tbl <- tbl(conn2, "AVAIL_BLOCK")
+block_name_tbl <- tbl(conn2, "ZC_APPT_BLOCK")
+orders_raw_tbl <- tbl(conn2, "ORDER_PROC")
+coverage_tbl <- tbl(conn2, "V_PAT_ENC_COVERAGE")
+template_tbl <- tbl(conn2, "TEMPLATE")
+
+clarity_ser_tbl <- tbl(conn2, "CLARITY_SER")
+
+```
+
+
+```{r Report Variables, echo = FALSE, warning = FALSE, message = FALSE}
+report_run_date <- Sys.Date()
+
+```
+
+
+```{r Department and Provider Mapping, echo = FALSE, warning = FALSE, message = FALSE}
+# Department and Provider Mapping ----------------------------------------------
+dept_mapping <- access_raw_tbl %>%
+  group_by(SITE, DEPARTMENT_ID, DEPARTMENT_NAME, DEPT_SPECIALTY_NAME) %>%
+  summarise(total = n()) %>%
+  collect() %>%
+  dplyr::select(-total)
+prov_mapping <- access_raw_tbl %>%
+  group_by(PROV_ID, PROV_NAME_WID) %>%
+  summarise(total = n()) %>%
+  collect() %>%
+  dplyr::select(-total)
+prov_mapping$PROV_NAME <- trimws(gsub("\\[.*?\\]", "", prov_mapping$PROV_NAME_WID))
+```
+
+
+```{r New Patient Blocks, echo = FALSE, warning = FALSE, message = FALSE}
+new_blocks <- c(
+  "GMA New Pt",
+  "Endo New Patient",
+  "Covid New Patient",
+  "Concussion New",
+  "GYN NEW PT",
+  "Hematology New Patient",
+  "Initial Eval/New",
+  "Lymphedema New",
+  "Medicare Wellness - New",
+  "New Cancer Patient",
+  "NEW EAR",
+  "New Lar",
+  "New Patient Continued",
+  "New Patient Extended",
+  "New Patient freeze",
+  "New Patient Only",
+  "New Patient pt",
+  "New Patient Start",
+  "NEW PATIENT-GERIATRICS",
+  "NEW RUNNING EVAL",
+  "New Vertigo Patient",
+  "NEW VOICE MODIFICATION",
+  "New/Follow-up",
+  "New/Fup/Hyl",
+  # "OB NEW PATIENT",
+  "Onc PT New",
+  "Oncology New Patient",
+  "OPR Sports New",
+  "PA GYN NEW",
+  "PALL-NEW PT",
+  "PEDS CONCUSSION NEW",
+  "PEDS NEW",
+  "PEDS ORTHO NEW",
+  "Physical Exam - New",
+  "SINUS NEW",
+  "Sports New",
+  "VESTIBULAR NEW",
+  "Zocdoc New",
+  "New Patient 14-Day",
+  "New Patient 21-Day",
+  "New Patient 28-Day",
+  "New Patient 7-Day",
+  "ALS NEW",
+  "APOS NEW",
+  "Autoimmune New",
+  "CF NEW",
+  "COVID-19 SCREENING IN OFFICE NEW PATIENT",
+  "Initial Visit",
+  "New Pt - Straight Medicare",
+  "NEW SELIKOFF",
+  "OPR New Patient",
+  "WOMEN'S SPORTS PT NEW",
+  "New Patient pt",
+  "Pregnancy Confirmation",
+  "New Patient Start",
+  "NEW GYN 7-DAY",
+  "NEW GYN 14-DAY",
+  "NEW GYN 21-DAY",
+  "NEW GYN 28-DAY"
+)
+release_blocks <- c(
+  "New Patient 14-Day",
+  "New Patient 21-Day",
+  "New Patient 28-Day",
+  "New Patient 7-Day",
+  "NEW GYN 7-DAY",
+  "NEW GYN 14-DAY",
+  "NEW GYN 21-DAY",
+  "NEW GYN 28-DAY",
+  "Pregnancy Confirmation"
+)
+```
+
+
+```{r Late Releasing Slots, echo = FALSE, warning = FALSE, message = FALSE}
+
+# Slot Block Data --------------------------------------------------------------
+late_block_raw <- block_raw_tbl %>%
+  mutate(Slot.DateYear = TO_DATE(SLOT_BEGIN_TIME),
+         Slot.Year = year(SLOT_BEGIN_TIME),
+         Slot.Month = month(SLOT_BEGIN_TIME)) %>%
+  filter(Slot.DateYear >= as.Date("2023-06-01")) %>%
+  # filter(Slot.Year == 2024) %>%
+  # filter(Slot.Month >= 08) %>%
+  left_join(block_name_tbl %>% dplyr::select(APPT_BLOCK_C, NAME), 
+            by = c("BLOCK_C" = "APPT_BLOCK_C")) %>%
+  left_join(block_name_tbl %>% dplyr::select(APPT_BLOCK_C, NAME), 
+            by = c("REL_BLOCK_C" = "APPT_BLOCK_C")) %>%
+  rename(block_name = NAME.x,
+         org_block_name = NAME.y) %>%
+  mutate(comb_block_name = trim(ifelse(is.na(org_block_name), block_name, org_block_name))) %>%
+  left_join(availability_raw_tbl %>% dplyr::select(PROV_ID, DEPARTMENT_ID, SLOT_BEGIN_TIME, ORG_REG_OPENINGS) %>%
+              group_by(PROV_ID, DEPARTMENT_ID, SLOT_BEGIN_TIME, ORG_REG_OPENINGS) %>%
+              summarise(total = n()) %>%
+              dplyr::select(-total),
+            by = c("PROV_ID", "DEPARTMENT_ID", "SLOT_BEGIN_TIME")) 
+
+```
+
+
+```{r No Show Rates, echo = FALSE, warning = FALSE, message = FALSE}
+
+access_data <- access_raw_tbl %>%
+  left_join(block_raw_tbl %>% dplyr::select("DEPARTMENT_ID", "PROV_ID", "SLOT_BEGIN_TIME", "BLOCK_C", "REL_BLOCK_C"),
+            by = c("APPT_DTTM" = "SLOT_BEGIN_TIME",
+                   "DEPARTMENT_ID" =  "DEPARTMENT_ID",
+                   "PROV_ID" = "PROV_ID")) %>%
+  left_join(block_name_tbl %>% dplyr::select(APPT_BLOCK_C, NAME),
+            by = c("BLOCK_C" = "APPT_BLOCK_C")) %>%
+  left_join(block_name_tbl %>% dplyr::select(APPT_BLOCK_C, NAME),
+            by = c("REL_BLOCK_C" = "APPT_BLOCK_C")) %>%
+  rename(block_name = NAME.x,
+         org_block_name = NAME.y)
+  
+
+
+access_data <- access_data %>%
+  mutate(Appt.DateYear = TO_DATE(APPT_DTTM),
+         Appt.Year = year(APPT_DTTM),
+         Appt.MonNum = month(APPT_DTTM),
+         Appt.Made.DateYear = TO_DATE(APPT_MADE_DTTM),
+         Appt.Made.Year = year(APPT_MADE_DTTM),
+         Appt.Made.MonNum = month(APPT_MADE_DTTM)) %>%
+  filter(Appt.DateYear >= as.Date("2023-06-01")) %>%
+  mutate(Wait.Time = TO_DATE(CONTACT_DATE) - TO_DATE(APPT_MADE_DATE)) %>%
+  mutate(group = ifelse(Wait.Time >= 0 & Wait.Time <=7, "0-7",
+                        ifelse(Wait.Time >7 & Wait.Time <=14, "8-14",
+                               ifelse(Wait.Time >14 & Wait.Time <=30, "15-30", ">30")))) %>%
+  mutate(New.PT2  = ifelse(is.na(VISIT_GROUP_NUM), 'Established', 'New')) %>%
+  mutate(Visit.Method  = ifelse(VISIT_METHOD == "IN PERSON", 'IN PERSON', 'TELEHEALTH')) %>%
+  mutate(Appt.Status = ifelse(DERIVED_STATUS_DESC == "No Show", "no_show", DERIVED_STATUS_DESC)) %>%
+  mutate(sameDay_canceled = ifelse(CONTACT_DATE == APPT_CANC_DATE, "Yes", "No")) %>%
+  mutate(Appt.Status = case_when(sameDay_canceled == "Yes" & Appt.Status %in% c("Canceled","Rescheduled","Bumped") ~ paste0("SameDay_",Appt.Status),
+                                 TRUE ~ Appt.Status)) 
+  
+  
+
+no_show <- access_data %>%
+  filter(Appt.Year >= 2023) %>%
+  mutate(comb_block_name = trim(ifelse(is.na(org_block_name), block_name, org_block_name))) %>%
+  group_by(SITE, DEPT_SPECIALTY_NAME, DEPARTMENT_NAME, DEPARTMENT_ID, PROV_NAME_WID, PROV_ID, Appt.Year, Appt.MonNum, comb_block_name, Appt.Status) %>%
+  summarise(total = n()) %>%
+  collect() %>%
+  mutate(block_type = case_when(comb_block_name %in% release_blocks ~ "late_release",
+                                comb_block_name %in% new_blocks ~ "non_late_release_new",
+                                TRUE ~ "other")) %>%
+  group_by(SITE, DEPT_SPECIALTY_NAME, DEPARTMENT_NAME, DEPARTMENT_ID, PROV_NAME_WID, PROV_ID, Appt.Year, Appt.MonNum, block_type, Appt.Status) %>%
+  summarise(total = sum(total)) %>%
+  pivot_wider(names_from = Appt.Status,
+              values_from = total, 
+              values_fill = 0) %>%
+  mutate(no_show_rate = no_show/(Arrived + no_show),
+         no_show_plus_rate = (no_show + SameDay_Canceled)/(Arrived + no_show + SameDay_Canceled)) 
+
+no_show_summary <- no_show %>%
+  dplyr::select(SITE, DEPT_SPECIALTY_NAME, DEPARTMENT_NAME, DEPARTMENT_ID, PROV_NAME_WID, PROV_ID, Appt.Year, Appt.MonNum, block_type, Arrived,  no_show, SameDay_Canceled, no_show_rate, no_show_plus_rate) %>%
+  pivot_wider(names_from = block_type,
+              values_from = Arrived:no_show_plus_rate,
+              values_fill = 0) %>%
+  mutate(YearMonth = ifelse(Appt.MonNum %in% c(10,11,12), paste0(Appt.Year, "-", Appt.MonNum), paste0(Appt.Year, "-", paste0("0",Appt.MonNum))))
+
+```
+
+
+```{r Block Usage Audit, echo = FALSE, warning = FALSE, message = FALSE}
+# # Block combinations by time slot ----------------------------------------------
+# ## Shows all blocks associated to each time slot -------------------------------
+# blocks_combined <- late_block_raw %>%
+#   collect()
+#   ungroup() %>%
+#   arrange(DEPARTMENT_ID, SLOT_BEGIN_TIME, comb_block_name) %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, SLOT_BEGIN_TIME, Slot.DateYear, comb_block_name) %>%
+#   summarise(total_blocks = n())
+# ## Count of Block Combination Usage --------------------------------------------
+# block_combination_usage <- blocks_combined %>%
+#   collect() %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, SLOT_BEGIN_TIME) %>%
+#   mutate(block_combination = paste0(unique(comb_block_name), collapse = ', ')) %>%
+#   mutate(total_blocks = length(unique(comb_block_name))) %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, Slot.DateYear, block_combination, total_blocks) %>%
+#   summarise(total_slots = length(unique(SLOT_BEGIN_TIME))) %>%
+#   mutate(slot_incorrect = case_when(total_blocks >1 & str_detect(block_combination, str_c(release_blocks, collapse = "|")) ~ "Yes",
+#                                     TRUE ~ "No"))
+#   
+#   
+# block_combination_usage$Site <- dept_mapping$SITE[match(block_combination_usage$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+# block_combination_usage$Department <- dept_mapping$DEPARTMENT_NAME[match(block_combination_usage$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+# block_combination_usage$Provider <- prov_mapping$PROV_NAME[match(block_combination_usage$PROV_ID, prov_mapping$PROV_ID)]
+```
+
+
+```{r Block Combination and Openings, echo=FALSE, message=FALSE, warning=FALSE}
+# Block combinations by time slot ----------------------------------------------
+## Shows all blocks associated to each time slot -------------------------------
+blocks_combined <- late_block_raw %>%
+  ungroup() %>%
+  arrange(DEPARTMENT_ID, SLOT_BEGIN_TIME, comb_block_name) %>%
+  group_by(DEPARTMENT_ID, PROV_ID, SLOT_BEGIN_TIME, Slot.DateYear, LINE, comb_block_name, ORG_AVAIL_BLOCKS, ORG_REG_OPENINGS) %>%
+  summarise(total_blocks = n())
+  
+
+# Identify slots with incorrect block & openings build -------------------------
+block_openings <- blocks_combined %>%
+  mutate(block_type = case_when(comb_block_name %in% release_blocks ~ "release",
+                                comb_block_name %in% new_blocks ~ "new",
+                                TRUE ~ "non-new")) %>%
+  collect() %>%
+  group_by(DEPARTMENT_ID, PROV_ID, SLOT_BEGIN_TIME) %>%
+  mutate(block_combination = paste0(unique(comb_block_name), collapse = ', ')) %>%
+  group_by(DEPARTMENT_ID, PROV_ID, SLOT_BEGIN_TIME, Slot.DateYear, ORG_REG_OPENINGS, block_combination, block_type) %>%
+  summarise(openings = sum(ORG_AVAIL_BLOCKS),
+            blocks = n()) %>%
+  pivot_wider(names_from = block_type,
+              values_from = openings:blocks)
+
+block_openings <- block_openings %>%
+  mutate(total_openings = sum(`openings_non-new`, openings_new, openings_release, na.rm =  T),
+         openings_not_release = sum(`openings_non-new`, openings_new, na.rm = T),
+         blocks_not_release = sum(`blocks_non-new`, blocks_new, na.rm = T))
+  
+block_openings <- block_openings %>%
+  mutate(combination_new = case_when(blocks_new >= 1 & `blocks_non-new` >= 1 ~ 1,
+                                    blocks_new >= 1 & blocks_release >= 1 ~ 1,
+                                    TRUE ~ 0))
+
+block_openings <- block_openings %>%
+  mutate(combination_release = case_when(blocks_release >= 1 & `blocks_non-new` >= 1 ~ 1,
+                                    blocks_release >= 1 & blocks_new >= 1 ~ 1,
+                                    TRUE ~ 0)) 
+
+block_openings <- block_openings %>%
+  filter(combination_new == 1 | combination_release == 1)
+
+block_openings <- block_openings %>%
+  mutate(incorrect_slot_reason = case_when(blocks_release >= 1 & is.na(total_openings)  ~ "Late-Releasing Combination with No Openings", # Combination with no openings at all 
+                                           blocks_release >= 1 & is.na(openings_release) ~ "Late-Releasing Combination with No Openings",
+                                           blocks_release >= 1 & ORG_REG_OPENINGS - openings_not_release < 1 ~ "Late-Releasing Combination with No Openings",
+                                           blocks_new >= 1 & is.na(openings_new) ~ "New Combination with No Openings",
+                                           blocks_new >= 1 & ORG_REG_OPENINGS - `openings_non-new` < 1 ~ "New Combination with No Openings",
+                                           TRUE ~ "")) 
+
+block_openings <- block_openings %>%
+  mutate(incorrect_slot = ifelse(incorrect_slot_reason == "", 0, 1)) %>%
+  filter(incorrect_slot == 1) 
+
+block_openings <- block_openings %>%
+  mutate(Slot.Year = format(as.Date(SLOT_BEGIN_TIME),"%Y")) %>%
+  mutate(Slot.Month = format(as.Date(SLOT_BEGIN_TIME),"%m")) %>%
+  dplyr::select(-c(total_openings, openings_not_release, blocks_not_release, combination_new, combination_release))
+
+# block_openings <- block_openings %>%
+#   mutate(incorrect_perc = round(incorrect_slot/total_slot,2))
+
+block_openings$openings_new[is.na(block_openings$openings_new)] <- 0
+block_openings$`openings_non-new`[is.na(block_openings$`openings_non-new`)] <- 0
+block_openings$openings_release[is.na(block_openings$openings_release)] <- 0
+
+block_openings$Site <- dept_mapping$SITE[match(block_openings$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+block_openings$Specialty <- dept_mapping$DEPT_SPECIALTY_NAME[match(block_openings$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+block_openings$Department <- dept_mapping$DEPARTMENT_NAME[match(block_openings$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+block_openings$Provider <- prov_mapping$PROV_NAME[match(block_openings$PROV_ID, prov_mapping$PROV_ID)]
+
+```
+
+
+
+```{r Time Release Block Conversion, echo = FALSE, warning = FALSE, message = FALSE}
+# Categorize slots by non-new vs. new vs. new time-relese 
+blocks_combined_type <- blocks_combined %>%
+  left_join(clarity_ser_tbl %>% 
+              dplyr::select(PROV_ID, PROV_TYPE)) %>%
+  mutate(new_block = case_when(comb_block_name %in% new_blocks ~ "NEW_BLOCK",
+                               TRUE ~ "NON_NEW_BLOCK"),
+         release_block = case_when(comb_block_name %in% release_blocks ~ "TIME_RELEASE",
+                                   TRUE ~ "NON_TIME_RELEASE")) %>%
+  collect() %>%
+  arrange(DEPARTMENT_ID, PROV_ID, SLOT_BEGIN_TIME, comb_block_name) %>%
+  group_by(DEPARTMENT_ID, PROV_ID, PROV_TYPE, SLOT_BEGIN_TIME) %>%
+  mutate(block_combination = paste0(unique(comb_block_name), collapse = ', ')) %>%
+  group_by(DEPARTMENT_ID, PROV_ID, PROV_TYPE, SLOT_BEGIN_TIME,  block_combination, new_block, release_block) %>%
+  summarise(total = n()) %>%
+  mutate(Slot.Year = format(as.Date(SLOT_BEGIN_TIME),"%Y"),
+         Slot.Month = format(as.Date(SLOT_BEGIN_TIME),"%m")) 
+
+
+blocks_combined_type$Site <- dept_mapping$SITE[match(blocks_combined_type$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+blocks_combined_type$Specialty <- dept_mapping$DEPT_SPECIALTY_NAME[match(blocks_combined_type$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+blocks_combined_type$Department <- dept_mapping$DEPARTMENT_NAME[match(blocks_combined_type$DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+blocks_combined_type$Provider <- prov_mapping$PROV_NAME[match(blocks_combined_type$PROV_ID, prov_mapping$PROV_ID)]
+
+blocks_combined_type <- blocks_combined_type %>%
+  mutate(Slot.YearMonth = paste0(Slot.Year,"-",Slot.Month))
+
+# Summary of slot type by month   
+new_block_conversion <- blocks_combined_type %>%
+  pivot_wider(names_from = c("new_block","release_block"),
+              values_from = total,
+              values_fill = 0) %>%
+  mutate(incorrect_new_block = ifelse(NON_NEW_BLOCK_NON_TIME_RELEASE>0 & NEW_BLOCK_NON_TIME_RELEASE>0 & NEW_BLOCK_TIME_RELEASE == 0, 1, 0),
+         incorrect_time_release_block = ifelse(NON_NEW_BLOCK_NON_TIME_RELEASE>0 & NEW_BLOCK_TIME_RELEASE>0, 1, 0)) %>%
+  mutate(NON_NEW_BLOCK_NON_TIME_RELEASE = ifelse(NON_NEW_BLOCK_NON_TIME_RELEASE>0 & NEW_BLOCK_NON_TIME_RELEASE==0 & NEW_BLOCK_TIME_RELEASE==0,1,0),
+         NEW_BLOCK_NON_TIME_RELEASE = ifelse(NEW_BLOCK_NON_TIME_RELEASE>0 & NEW_BLOCK_TIME_RELEASE==0,1,0),
+         NEW_BLOCK_TIME_RELEASE = ifelse(NEW_BLOCK_TIME_RELEASE>0,1,0)) %>%
+  group_by(Site, Specialty, Department, DEPARTMENT_ID, Provider, PROV_ID, PROV_TYPE, Slot.YearMonth) %>%
+  summarise(NON_NEW_BLOCK_NON_TIME_RELEASE = sum(NON_NEW_BLOCK_NON_TIME_RELEASE),
+            NEW_BLOCK_NON_TIME_RELEASE = sum(NEW_BLOCK_NON_TIME_RELEASE),
+            NEW_BLOCK_TIME_RELEASE = sum(NEW_BLOCK_TIME_RELEASE),
+            incorrect_new_block = sum(incorrect_new_block),
+            incorrect_time_release_block = sum(incorrect_time_release_block),
+            TOTAL_BLOCKS = n()) %>%
+  mutate(DEPARTMENT_ID = as.character(DEPARTMENT_ID)) %>%
+  mutate(TOTAL_NEW_BLOCKS = NEW_BLOCK_NON_TIME_RELEASE + NEW_BLOCK_TIME_RELEASE,
+         NEW_BLOCK_PERC = round(TOTAL_NEW_BLOCKS/TOTAL_BLOCKS,2),
+         NEW_BLOCK_TIME_RELEASE_PERC = round(NEW_BLOCK_TIME_RELEASE/TOTAL_NEW_BLOCKS,2),
+         correct_new_block = NEW_BLOCK_NON_TIME_RELEASE - incorrect_new_block,
+         correct_time_release_block = NEW_BLOCK_TIME_RELEASE - incorrect_time_release_block,
+         incorrect_new_block_perc = round(incorrect_new_block/NEW_BLOCK_NON_TIME_RELEASE,2),
+         incorrect_time_release_perc = round(incorrect_time_release_block/NEW_BLOCK_TIME_RELEASE,2)) %>%
+  arrange(Site, Department, Provider)
+
+order <- c("Site","Department","Specialty","DEPARTMENT_ID","Provider", "PROV_ID", "PROV_TYPE","Slot.YearMonth",
+           "TOTAL_BLOCKS","TOTAL_NEW_BLOCKS",
+           "NON_NEW_BLOCK_NON_TIME_RELEASE","NEW_BLOCK_NON_TIME_RELEASE","NEW_BLOCK_TIME_RELEASE",
+           "correct_new_block", "incorrect_new_block",
+           "correct_time_release_block", "incorrect_time_release_block",
+           "incorrect_new_block_perc", "incorrect_time_release_perc",
+           "NEW_BLOCK_PERC", "NEW_BLOCK_TIME_RELEASE_PERC")
+
+new_block_conversion <- new_block_conversion[order]
+new_block_conversion$NEW_BLOCK_PERC[is.nan(new_block_conversion$NEW_BLOCK_PERC)]<-NA
+new_block_conversion$NEW_BLOCK_TIME_RELEASE_PERC[is.nan(new_block_conversion$NEW_BLOCK_TIME_RELEASE_PERC)]<-NA
+
+new_block_conversion <- new_block_conversion %>%
+  mutate(YearMonth = Slot.YearMonth)
+```
+
+
+```{r Merge Block and No Show Data, echo = FALSE, warning = FALSE, message = FALSE}
+
+
+metrics_merged <- left_join(new_block_conversion,
+                            no_show_summary %>% 
+                              mutate(DEPARTMENT_ID = as.character(DEPARTMENT_ID)) %>%
+                              ungroup() %>%
+                              dplyr::select(-c(SITE, DEPT_SPECIALTY_NAME, DEPARTMENT_NAME, PROV_NAME_WID, Appt.Year, Appt.MonNum)),
+                            by = c("DEPARTMENT_ID", "PROV_ID", "YearMonth"))
+
+
+```
+
+
+```{r Time Release of Block Duration vs. Appt Length, echo = FALSE, warning = FALSE, message = FALSE}
+# # Merge data for additional slot and appt details
+# block_appt_merged <- late_block_raw %>%
+#   left_join(availability_raw_tbl %>% dplyr::select(DEPARTMENT_ID, PROV_ID, SLOT_BEGIN_TIME, SLOT_LENGTH,
+#                                                    UNAVAILABLE_RSN_NAME, APPT_BLOCK_NAME, APPT_PRC_NAME, PAT_ENC_CSN_ID),
+#             by = c("DEPARTMENT_ID", "PROV_ID", "SLOT_BEGIN_TIME")) %>%
+#   left_join(access_raw_tbl %>% dplyr::select(PAT_ENC_CSN_ID, APPT_DTTM, PRC_NAME, APPT_LENGTH, VISIT_GROUP_NUM, APPT_MADE_DATE),
+#             by = c("PAT_ENC_CSN_ID")) %>%
+#   mutate(block_type = case_when(comb_block_name %in% new_blocks ~ "NEW_BLOCK",
+#                                TRUE ~ "NON_NEW_BLOCK")) %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, Slot.DateYear, SLOT_BEGIN_TIME, block_type, comb_block_name, 
+#            SLOT_LENGTH, UNAVAILABLE_RSN_NAME, PAT_ENC_CSN_ID, APPT_BLOCK_NAME, APPT_PRC_NAME, APPT_LENGTH, VISIT_GROUP_NUM) %>%
+#   summarise(total_blocks = n()) 
+#   # group_by(DEPARTMENT_ID, PROV_ID, Slot.DateYear, block_type, comb_block_name, SLOT_LENGTH, APPT_BLOCK_NAME, APPT_PRC_NAME, APPT_LENGTH, VISIT_GROUP_NUM) %>%
+#   # summarise(total_blocks = n()) %>%
+#   # collect()
+# 
+# # block_appt_merged  <- block_appt_merged  %>%
+# #   mutate(incorrect = ifelse(APPT_LENGTH>=SLOT_LENGTH, APPT_LENGTH  %% SLOT_LENGTH, SLOT_LENGTH %% APPT_LENGTH))
+# 
+# block_appt_merged <- block_appt_merged %>%
+#   collect() 
+# 
+# block_appt_merged$Site <- dept_mapping$SITE[match(block_appt_merged $DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+# block_appt_merged$Specialty <- dept_mapping$DEPT_SPECIALTY_NAME[match(block_appt_merged $DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+# block_appt_merged$Department <- dept_mapping$DEPARTMENT_NAME[match(block_appt_merged $DEPARTMENT_ID, dept_mapping$DEPARTMENT_ID)]
+# block_appt_merged$Provider <- prov_mapping$PROV_NAME[match(block_appt_merged $PROV_ID, prov_mapping$PROV_ID)]
+# 
+# 
+# slot_length_test <- block_appt_merged %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, Department, Provider, SLOT_BEGIN_TIME, SLOT_LENGTH, UNAVAILABLE_RSN_NAME) %>%
+#   mutate(block_combined = paste(unique(comb_block_name), collapse = ", ")) %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, Department, Provider, SLOT_BEGIN_TIME, SLOT_LENGTH, UNAVAILABLE_RSN_NAME, block_combined) %>%
+#   summarise(total = n()) %>%
+#   dplyr::select(-total)
+# 
+# appt_length_test <- block_appt_merged %>%
+#   collect() %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, Department, Provider, SLOT_BEGIN_TIME, PAT_ENC_CSN_ID, APPT_BLOCK_NAME, APPT_PRC_NAME, VISIT_GROUP_NUM, APPT_LENGTH) %>%
+#   summarise(total = n()) %>%
+#   group_by(DEPARTMENT_ID, PROV_ID, Department, Provider, SLOT_BEGIN_TIME) %>%
+#   mutate(total = n()) %>%
+#   filter(!(is.na(PAT_ENC_CSN_ID) & total >1)) %>%
+#   dplyr::select(-total)
+# 
+# merge_test <- merge(slot_length_test, appt_length_test)
+# 
+# # Analyze Booked Rate based on Slot Length -------------------------------------
+# unbooked_slots <- merge_test %>%
+#   filter(is.na(UNAVAILABLE_RSN_NAME)) %>%
+#   filter(is.na(PAT_ENC_CSN_ID)) %>%
+#   mutate(Slot.DateYear = as.Date(SLOT_BEGIN_TIME, "%Y-%m-%d")) %>%
+#   group_by(DEPARTMENT_ID, Department, PROV_ID, Provider, Slot.DateYear, SLOT_LENGTH) %>%
+#   summarise(total = n()) %>%
+#   pivot_wider(names_from = SLOT_LENGTH,
+#               values_from = total,
+#               values_fill = 0)
+```
+
+
+```{r Sinai Logo, echo=FALSE, out.width = '15%'}
+knitr::include_graphics("Mount_Sinai_Logo_H.png")
+```
+
+
+# No Show Rate by Block Type {.tabset .tabset-fade .tabset-pills}
+*Report run date: `r report_run_date`*<br/>
+______________________________________________________________________________________________________________________________
+<br/>
+<br/>
+
+
+## Late-Releasing New Patient Block Conversion (Physicians Only)
+```{r Block Conversion Output (block Count) Physicians Only, echo = FALSE, warning = FALSE, message = FALSE}
+# Table Output -----------------------------------------------------------------
+htmltools::browsable(
+  tagList(
+    tags$button(
+      tagList(fontawesome::fa("download"), "Download Table"),
+      onclick = "Reactable.downloadDataCSV('block-conversion-physicians', 'Physicians Block Conversion')"
+    ),
+# htmltools::browsable(
+#   tagList(
+#     div(tags$label("Group by", `for` = "cars-grouping-select")),
+#     tags$select(
+#       id = "cars-grouping-select",
+#       onchange = "Reactable.setGroupBy('cars-grouping-table', this.value ? [this.value] : [])",
+#       tags$option("None", value = c("Campus","Campus.Specialty.Group")),
+#       # tags$option("Test", value = c("Appt.Source.New","Campus.Specialty.Group")),
+#       # lapply(c("Campus", "Campus.Specialty.Group", "Appt.Source.New"), tags$option)
+#       lapply(c("Campus", "Campus.Specialty.Group", "Appt.Source.New"), tags$option)
+#     ),
+#
+#     tags$hr("aria-hidden" = "true"),
+reactable(
+  metrics_merged %>%
+    filter(PROV_TYPE == "Physician") %>%
+    filter(Site %!in% c("MSH- AMBULATORY CARE", "MSHP", "OTHER")) %>%
+    filter(!is.na(Site)) %>%
+    # mutate(MSHS = "MSHS") %>%
+    mutate(Slot.YearMonth = as.character(Slot.YearMonth)) %>%
+    arrange(Slot.YearMonth),
+  elementId = "block-conversion-physicians",
+  # elementId = "cars-grouping-table",
+  style = list(fontFamily = 'Calibri',
+                 fontSize = '14px'),
+    defaultColDef = colDef(align = "left",
+                           headerStyle = list(fontWeight = "Bold", fontSize = "14px"),
+                           headerClass = "bar-sort-header"),
+  # RowStyle = function(index) {
+  #           if (index %in% c(nrow(referral_vol_site_data_mshs))) {
+  #             list(`border-top` = "2px solid rgb(184,184,184)",
+  #                  fontWeight = "Bold")
+  #           }
+  #         },
+    highlight = TRUE,
+    # filterable = TRUE,
+    pagination = FALSE,
+    # height = 800,
+    wrap = TRUE,
+  searchable = TRUE,
+  # rowStyle = function(index) {
+  #           if (index %in% c(10)) {
+  #             list(`border-top` = "2px solid rgb(184,184,184)",
+  #                  fontWeight = "Bold")
+  #           }
+  #         },
+  groupBy = c("Slot.YearMonth", "Site", "Department", "Specialty", "PROV_TYPE", "Provider"),
+  columns = list(
+    Site = colDef(
+      name = "Site",
+      minWidth = 180),
+    
+    Specialty = colDef(
+      minWidth = 200),
+    Department = colDef(
+      minWidth = 200),
+    PROV_TYPE = colDef(
+      name = "Provider Type",
+      minWidth = 130),
+    Provider = colDef(
+      minWidth = 130),
+    Slot.YearMonth = colDef(
+      name = "Year-Month",
+      minWidth = 100),
+    TOTAL_BLOCKS = colDef(
+      name = "Total Blocks",
+      maxWidth = 100,
+      headerStyle = list(background = "#212070", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = 'sum',
+      format = colFormat(separators = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
+    TOTAL_NEW_BLOCKS = colDef(
+      name = "Total New Patient Blocks",
+      maxWidth = 100,
+      headerStyle = list(background = "#212070", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = 'sum',
+      format = colFormat(separators = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
+    
+    # correct_new_block = colDef(
+    #   name = "Individual Non-Late-Releasing Blocks",
+    #   maxWidth = 100,
+    #   headerStyle = list(background = "#d80b8c", color = "white", fontWeight = "Bold", fontSize = "14px"),
+    #   aggregate = 'sum',
+    #   format = colFormat(separators = TRUE, digits = 0),
+    #   style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    # ),
+    # 
+    # incorrect_new_block = colDef(
+    #   name = "Combination Non-Late-Releasing Blocks",
+    #   maxWidth = 100,
+    #   headerStyle = list(background = "#d80b8c", color = "white", fontWeight = "Bold", fontSize = "14px"),
+    #   aggregate = 'sum',
+    #   format = colFormat(separators = TRUE, digits = 0),
+    #   style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    # ),
+    # 
+    # correct_time_release_block = colDef(
+    #   name = "Individual Late-Releasing Blocks",
+    #   maxWidth = 100,
+    #   headerStyle = list(background = "#00aeef", color = "white", fontWeight = "Bold", fontSize = "14px"),
+    #   aggregate = 'sum',
+    #   format = colFormat(separators = TRUE, digits = 0),
+    #   style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    # ),
+    # 
+    # incorrect_time_release_block = colDef(
+    #   name = "Combination Late-Releasing Blocks",
+    #   maxWidth = 100,
+    #   headerStyle = list(background = "#00aeef", color = "white", fontWeight = "Bold", fontSize = "14px"),
+    #   aggregate = 'sum',
+    #   format = colFormat(separators = TRUE, digits = 0),
+    #   style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    # ),
+    
+    NEW_BLOCK_PERC = colDef(
+      name = "% of New Patient Blocks",
+      maxWidth = 150,
+     headerStyle = list(background = "#a5a7a5", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = JS("function(values, rows) {
+        let totalTOTAL_BLOCKS = 0
+        let totalTOTAL_NEW_BLOCKS = 0
+        rows.forEach(function(row) {
+          totalTOTAL_BLOCKS += row['TOTAL_BLOCKS']
+          totalTOTAL_NEW_BLOCKS += row['TOTAL_NEW_BLOCKS']
+        })
+        return (totalTOTAL_NEW_BLOCKS) / totalTOTAL_BLOCKS || '-'
+      }"),
+      format = colFormat(percent = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
+    NEW_BLOCK_TIME_RELEASE_PERC = colDef(
+      name = "% of New Patient Blocks Converted to Late-Releasing Blocks",
+      maxWidth = 150,
+     headerStyle = list(background = "#a5a7a5", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = JS("function(values, rows) {
+        let totalTOTAL_NEW_BLOCKS = 0
+        let totalNEW_BLOCK_TIME_RELEASE = 0
+        rows.forEach(function(row) {
+          totalTOTAL_NEW_BLOCKS += row['TOTAL_NEW_BLOCKS']
+          totalNEW_BLOCK_TIME_RELEASE += row['NEW_BLOCK_TIME_RELEASE']
+        })
+        return (totalNEW_BLOCK_TIME_RELEASE) / totalTOTAL_NEW_BLOCKS || '-'
+      }"),
+      format = colFormat(percent = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
+    no_show_plus_rate_late_release = colDef(
+      name = "Late-Releasing No Show %",
+      maxWidth = 150,
+     headerStyle = list(background = "#7030a0", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = JS("function(values, rows) {
+        let totalArrived_late_release = 0
+        let totalSameDay_Canceled_late_release = 0
+        let totalno_show_late_release = 0
+        rows.forEach(function(row) {
+          totalArrived_late_release += row['Arrived_late_release']
+          totalSameDay_Canceled_late_release += row['SameDay_Canceled_late_release']
+          totalno_show_late_release += row['no_show_late_release']
+        })
+        return (totalSameDay_Canceled_late_release + totalno_show_late_release) / (totalSameDay_Canceled_late_release + totalno_show_late_release + totalArrived_late_release) || '-'
+      }"),
+      format = colFormat(percent = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
+    no_show_plus_rate_non_late_release_new = colDef(
+      name = "New Non-Late Releasing No Show %",
+      maxWidth = 150,
+     headerStyle = list(background = "#7030a0", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = JS("function(values, rows) {
+        let totalArrived_non_late_release_new = 0
+        let totalSameDay_Canceled_non_late_release_new = 0
+        let totalno_show_non_late_release_new = 0
+        rows.forEach(function(row) {
+          totalArrived_non_late_release_new += row['Arrived_non_late_release_new']
+          totalSameDay_Canceled_non_late_release_new += row['SameDay_Canceled_non_late_release_new']
+          totalno_show_non_late_release_new += row['no_show_non_late_release_new']
+        })
+        return (totalSameDay_Canceled_non_late_release_new + totalno_show_non_late_release_new) / (totalSameDay_Canceled_non_late_release_new + totalno_show_non_late_release_new + totalArrived_non_late_release_new)  || '-'
+      }"),
+      format = colFormat(percent = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
+    no_show_plus_rate_other = colDef(
+      name = "Non-New No Show %",
+      maxWidth = 150,
+     headerStyle = list(background = "#7030a0", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = JS("function(values, rows) {
+        let totalArrived_other = 0
+        let totalSameDay_Canceled_other = 0
+        let totalno_show_other = 0
+        rows.forEach(function(row) {
+          totalArrived_other += row['Arrived_other']
+          totalSameDay_Canceled_other += row['SameDay_Canceled_other']
+          totalno_show_other += row['no_show_other']
+        })
+        return (totalSameDay_Canceled_other + totalno_show_other) / (totalSameDay_Canceled_other + totalno_show_other + totalArrived_other)  || '-'
+      }"),
+      format = colFormat(percent = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
+    
+    # Specialty = colDef(show =F),
+    DEPARTMENT_ID = colDef(show =F),
+    PROV_ID = colDef(show =F),
+    YearMonth = colDef(show =F),
+    correct_new_block = colDef(show =F),
+    incorrect_new_block = colDef(show =F),
+    correct_time_release_block = colDef(show =F),
+    incorrect_time_release_block = colDef(show =F),
+    NON_NEW_BLOCK_NON_TIME_RELEASE = colDef(show =F),
+    NEW_BLOCK_TIME_RELEASE = colDef(show =F),
+    NEW_BLOCK_NON_TIME_RELEASE = colDef(show =F),
+    incorrect_new_block = colDef(show =F),
+    incorrect_late_release_block = colDef(show =F),
+    incorrect_new_block_perc = colDef(show =F),
+    incorrect_time_release_perc = colDef(show =F),
+    Arrived_other = colDef(show =F),
+    Arrived_non_late_release_new = colDef(show =F),
+    Arrived_late_release = colDef(show =F),
+    SameDay_Canceled_other = colDef(show =F),
+    SameDay_Canceled_late_release = colDef(show =F),
+    SameDay_Canceled_non_late_release_new = colDef(show =F),
+    no_show_other = colDef(show =F),
+    no_show_late_release = colDef(show =F),
+    no_show_non_late_release_new = colDef(show =F),
+    no_show_rate_other = colDef(show =F),
+    no_show_rate_late_release = colDef(show =F),
+    no_show_rate_non_late_release_new = colDef(show =F)
+    
+  ) # Close Columns
+  ) # Close Reactable
+ )
+)
+```
+<br/>
+<br/>
+
+
+```{r}
+
+metrics_merged_graph_mshs <- metrics_merged %>%
+  filter(PROV_TYPE == "Physician") %>%
+    filter(Site %!in% c("MSH- AMBULATORY CARE", "MSHP", "OTHER")) %>%
+    filter(!is.na(Site)) %>%
+  mutate(Site = "*MSHS") %>%
+  group_by(Slot.YearMonth, Site) %>%
+  summarise(TOTAL_BLOCKS = sum(TOTAL_BLOCKS, na.rm = TRUE),
+            TOTAL_NEW_BLOCKS = sum(TOTAL_NEW_BLOCKS, na.rm = TRUE),
+            NEW_BLOCK_TIME_RELEASE = sum(NEW_BLOCK_TIME_RELEASE, na.rm = TRUE),
+            Arrived_other = sum(Arrived_other, na.rm = TRUE),
+            no_show_other = sum(no_show_other, na.rm = TRUE),
+            SameDay_Canceled_other = sum(SameDay_Canceled_other, na.rm = TRUE),
+            Arrived_late_release = sum(Arrived_late_release, na.rm = TRUE),
+            no_show_late_release = sum(no_show_late_release, na.rm = TRUE),
+            SameDay_Canceled_late_release = sum(SameDay_Canceled_late_release, na.rm = TRUE),
+            Arrived_non_late_release_new = sum(Arrived_non_late_release_new, na.rm = TRUE),
+            no_show_non_late_release_new = sum(no_show_non_late_release_new, na.rm = TRUE),
+            SameDay_Canceled_non_late_release_new = sum(SameDay_Canceled_non_late_release_new, na.rm = TRUE)) %>%
+  mutate(NEW_BLOCK_PERC = round(TOTAL_NEW_BLOCKS/TOTAL_BLOCKS,2)*100,
+         NEW_BLOCK_TIME_RELEASE_PERC = round(NEW_BLOCK_TIME_RELEASE/TOTAL_NEW_BLOCKS,2)*100,
+         no_show_plus_rate_other = round((no_show_other + SameDay_Canceled_other)/(no_show_other + SameDay_Canceled_other + Arrived_other),2)*100,
+         no_show_plus_rate_late_release = round((no_show_late_release + SameDay_Canceled_late_release)/
+           (no_show_late_release + SameDay_Canceled_late_release + Arrived_late_release),2)*100,
+         no_show_plus_rate_non_late_relese_new = round((no_show_non_late_release_new + SameDay_Canceled_non_late_release_new)/
+           (no_show_non_late_release_new + SameDay_Canceled_non_late_release_new + Arrived_non_late_release_new),2)*100)
+
+
+
+metrics_merged_graph_site <- metrics_merged %>%
+  filter(PROV_TYPE == "Physician") %>%
+    filter(Site %!in% c("MSH- AMBULATORY CARE", "MSHP", "OTHER")) %>%
+    filter(!is.na(Site)) %>%
+  group_by(Slot.YearMonth, Site) %>%
+  summarise(TOTAL_BLOCKS = sum(TOTAL_BLOCKS, na.rm = TRUE),
+            TOTAL_NEW_BLOCKS = sum(TOTAL_NEW_BLOCKS, na.rm = TRUE),
+            NEW_BLOCK_TIME_RELEASE = sum(NEW_BLOCK_TIME_RELEASE, na.rm = TRUE),
+            Arrived_other = sum(Arrived_other, na.rm = TRUE),
+            no_show_other = sum(no_show_other, na.rm = TRUE),
+            SameDay_Canceled_other = sum(SameDay_Canceled_other, na.rm = TRUE),
+            Arrived_late_release = sum(Arrived_late_release, na.rm = TRUE),
+            no_show_late_release = sum(no_show_late_release, na.rm = TRUE),
+            SameDay_Canceled_late_release = sum(SameDay_Canceled_late_release, na.rm = TRUE),
+            Arrived_non_late_release_new = sum(Arrived_non_late_release_new, na.rm = TRUE),
+            no_show_non_late_release_new = sum(no_show_non_late_release_new, na.rm = TRUE),
+            SameDay_Canceled_non_late_release_new = sum(SameDay_Canceled_non_late_release_new, na.rm = TRUE)) %>%
+  mutate(NEW_BLOCK_PERC = round(TOTAL_NEW_BLOCKS/TOTAL_BLOCKS,2)*100,
+         NEW_BLOCK_TIME_RELEASE_PERC = round(NEW_BLOCK_TIME_RELEASE/TOTAL_NEW_BLOCKS,2)*100,
+         no_show_plus_rate_other = round((no_show_other + SameDay_Canceled_other)/(no_show_other + SameDay_Canceled_other + Arrived_other),2)*100,
+         no_show_plus_rate_late_release = round((no_show_late_release + SameDay_Canceled_late_release)/
+           (no_show_late_release + SameDay_Canceled_late_release + Arrived_late_release),2)*100,
+         no_show_plus_rate_non_late_relese_new = round((no_show_non_late_release_new + SameDay_Canceled_non_late_release_new)/
+           (no_show_non_late_release_new + SameDay_Canceled_non_late_release_new + Arrived_non_late_release_new),2)*100)
+
+metrics_merged_graph <- bind_rows(metrics_merged_graph_mshs, metrics_merged_graph_site)
+
+```
+
+
+```{r}
+
+# map(unique(metrics_merged_graph$Site), function(x){
+# highchart() %>%
+#   hc_yAxis_multiples(
+#     list(title = list(text = "% Late-Releasing Blocks"), lineWidth = 3),
+#     list(title = list(text = "% No Show"), showLastLabel = FALSE, opposite = TRUE)
+#   ) %>%
+#   hc_xAxis(title = list(text = ""),
+#            categories = (metrics_merged_graph %>% filter(Site == x))$Slot.YearMonth,
+#            type = "datetime",
+#            labels = list(format = '{value:%m/%d}')
+#            # dateTimeLabelFormats = list(month = '%Y-%m')
+#            ) %>%
+#   hc_add_series(name = "% Late-Releasing Blocks",
+#                 data = (metrics_merged_graph %>% filter(Site == x))$NEW_BLOCK_TIME_RELEASE_PERC,
+#                 type = 'column',
+#                 color='#212070',
+#                 dataLabels = list(enabled = TRUE, format='{point.y}%')) %>%
+#   hc_add_series(name = "% No Show: Other",
+#                 data = (metrics_merged_graph %>% filter(Site == x))$no_show_plus_rate_other,
+#                 type = "line", yAxis = 1,
+#                 color='#d80b8c',
+#                 lineColor='#d80b8c',
+#                 dataLabels = list(enabled = TRUE, format='{point.y}%')) %>%
+#   hc_add_series(name = "% No Show: Non-Late-Releasing",
+#                 data = (metrics_merged_graph %>% filter(Site == x))$no_show_plus_rate_non_late_relese_new,
+#                 type = "line", yAxis = 1,
+#                 color='#d80b8c',
+#                 lineColor='#d80b8c',
+#                 dataLabels = list(enabled = TRUE, format='{point.y}%')) %>%
+#   hc_add_series(name = "% No Show: Late-Releasing",
+#                 data = (metrics_merged_graph %>% filter(Site == x))$no_show_plus_rate_late_release,
+#                 type = "line", yAxis = 1,
+#                 color='#d80b8c',
+#                 lineColor='#d80b8c',
+#                 dataLabels = list(enabled = TRUE, format='{point.y}%')) %>%
+#   hc_legend(align = "left", verticalAlign = "top", itemStyle = list(fontFamily ='Calibri',color ='black', fontSize = "14px")) %>%
+#   hc_title(text = paste0(x, " - No Show Rate by Block Type"), align = "left", style = list(fontWeight = 'bold', fontSize = "22px", fontFamily = "Calibri")) %>%
+#   hc_subtitle(text = paste0("Includes Physicians Only <br>"),
+#               align = "left", style = list(fontFace = "italic", fontSize = "16px", fontFamily = "Calibri")) %>%
+#   hc_tooltip(shared = TRUE, borderColor = "black")
+# }) %>%
+#   hw_grid(ncol = 2, rowheight = 400) %>% htmltools::browsable()
+
+
+```
+
