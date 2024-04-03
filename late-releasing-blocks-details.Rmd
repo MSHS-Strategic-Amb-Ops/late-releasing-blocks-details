@@ -305,6 +305,20 @@ clarity_ser_tbl <- tbl(conn2, "CLARITY_SER")
 ```{r Report Variables, echo = FALSE, warning = FALSE, message = FALSE}
 report_run_date <- Sys.Date()
 
+# start_date <- format(as.Date("2023-01-01"), "%Y-%m-%d")
+
+end_date <- format(as.Date(Sys.Date()-1), "%Y-%m-%d") 
+start_date <- paste0(format(as.Date(end_date) %m-% months(6), "%Y-%m"),"-01")
+
+
+
+# start_date <- paste0(format(as.Date("2023-01-2023"), "%Y-%m-%d"), " 00:00:00") 
+# end_date <- paste0(format(as.Date(Sys.Date()-1), "%Y-%m-%d"), " 00:00:00") 
+
+
+date_1 <- paste0(format(as.Date(Sys.Date())+1, "%Y-%m-%d"), " 00:00:00")
+
+
 ```
 
 
@@ -485,6 +499,11 @@ no_show_summary <- no_show %>%
   pivot_wider(names_from = block_type,
               values_from = Arrived:no_show_plus_rate,
               values_fill = 0) %>%
+  mutate(no_show_all = no_show_other + no_show_late_release + no_show_non_late_release_new,
+         SameDay_Canceled_all = SameDay_Canceled_other + SameDay_Canceled_late_release + SameDay_Canceled_non_late_release_new,
+         Arrived_all = Arrived_other, Arrived_late_release + Arrived_non_late_release_new) %>%
+  mutate(no_show_rate_all = no_show_all/(Arrived_all + no_show_all),
+         no_show_plus_rate_all = (no_show_all + SameDay_Canceled_all)/ (Arrived_all + no_show_all + SameDay_Canceled_all)) %>%
   mutate(YearMonth = ifelse(Appt.MonNum %in% c(10,11,12), paste0(Appt.Year, "-", Appt.MonNum), paste0(Appt.Year, "-", paste0("0",Appt.MonNum))))
 
 ```
@@ -911,6 +930,25 @@ reactable(
       style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
     ),
     
+    no_show_plus_rate_all = colDef(
+      name = "Overall No Show %",
+      maxWidth = 150,
+     headerStyle = list(background = "#7030a0", color = "white", fontWeight = "Bold", fontSize = "14px"),
+      aggregate = JS("function(values, rows) {
+        let totalArrived_all = 0
+        let totalSameDay_Canceled_all = 0
+        let totalno_show_all = 0
+        rows.forEach(function(row) {
+          totalArrived_all += row['Arrived_all']
+          totalSameDay_Canceled_all += row['SameDay_Canceled_all']
+          totalno_show_all += row['no_show_all']
+        })
+        return (totalSameDay_Canceled_all + totalno_show_all) / (totalSameDay_Canceled_all + totalno_show_all + totalArrived_all) || '-'
+      }"),
+      format = colFormat(percent = TRUE, digits = 0),
+      style = list(borderLeft = "1.5px solid rgb(230, 230, 230)")
+    ),
+    
     no_show_plus_rate_late_release = colDef(
       name = "Late-Releasing No Show %",
       maxWidth = 150,
@@ -984,15 +1022,19 @@ reactable(
     incorrect_late_release_block = colDef(show =F),
     incorrect_new_block_perc = colDef(show =F),
     incorrect_time_release_perc = colDef(show =F),
+    Arrived_all = colDef(show =F),
     Arrived_other = colDef(show =F),
     Arrived_non_late_release_new = colDef(show =F),
     Arrived_late_release = colDef(show =F),
+    SameDay_Canceled_all = colDef(show =F),
     SameDay_Canceled_other = colDef(show =F),
     SameDay_Canceled_late_release = colDef(show =F),
     SameDay_Canceled_non_late_release_new = colDef(show =F),
+    no_show_all = colDef(show =F),
     no_show_other = colDef(show =F),
     no_show_late_release = colDef(show =F),
     no_show_non_late_release_new = colDef(show =F),
+    no_show_rate_all = colDef(show =F),
     no_show_rate_other = colDef(show =F),
     no_show_rate_late_release = colDef(show =F),
     no_show_rate_non_late_release_new = colDef(show =F)
