@@ -501,7 +501,7 @@ no_show_summary <- no_show %>%
               values_fill = 0) %>%
   mutate(no_show_all = no_show_other + no_show_late_release + no_show_non_late_release_new,
          SameDay_Canceled_all = SameDay_Canceled_other + SameDay_Canceled_late_release + SameDay_Canceled_non_late_release_new,
-         Arrived_all = Arrived_other, Arrived_late_release + Arrived_non_late_release_new) %>%
+         Arrived_all = Arrived_other + Arrived_late_release + Arrived_non_late_release_new) %>%
   mutate(no_show_rate_all = no_show_all/(Arrived_all + no_show_all),
          no_show_plus_rate_all = (no_show_all + SameDay_Canceled_all)/ (Arrived_all + no_show_all + SameDay_Canceled_all)) %>%
   mutate(YearMonth = ifelse(Appt.MonNum %in% c(10,11,12), paste0(Appt.Year, "-", Appt.MonNum), paste0(Appt.Year, "-", paste0("0",Appt.MonNum))))
