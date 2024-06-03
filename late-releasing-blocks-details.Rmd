@@ -287,6 +287,8 @@ conn2 <- dbConnect(odbc(),
                   "Clarity_prod", 
                   uid = "kweons01" , 
                   pwd = "kweons01123$")
+conn3 <- dbPool(drv = odbc(), dsn = "OAO Cloud DB Staging", timeout = 30)
+
 # Import Slot Availability Data ------------------------------------------------
 slot_raw_tbl <- tbl(conn2, "Y_DM_BOOKED_FILLED_RATE")
 access_raw_tbl <- tbl(conn2, "MV_DM_PATIENT_ACCESS")
@@ -296,13 +298,18 @@ block_name_tbl <- tbl(conn2, "ZC_APPT_BLOCK")
 orders_raw_tbl <- tbl(conn2, "ORDER_PROC")
 coverage_tbl <- tbl(conn2, "V_PAT_ENC_COVERAGE")
 template_tbl <- tbl(conn2, "TEMPLATE")
-
 clarity_ser_tbl <- tbl(conn2, "CLARITY_SER")
+
+
+temp_slot_tbl <-  tbl(conn3, "AMBULATORY_SLOT_TABLE_TEMP")
+
+
 
 ```
 
 
 ```{r Report Variables, echo = FALSE, warning = FALSE, message = FALSE}
+
 report_run_date <- Sys.Date()
 
 # start_date <- format(as.Date("2023-01-01"), "%Y-%m-%d")
